@@ -3,7 +3,6 @@
 
 
 /*
-- Recognize changes on the file system and update display accordingly
 - Test environment and test cases
 - Error handling
 - comment
@@ -21,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
    QWidget *centralWidget = new QWidget(this);
    QHBoxLayout* mainLayout = new QHBoxLayout(centralWidget);
    imageTitle = new QLabel;
+   imageTitle->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+
+   imageTitle->setLineWidth(3);
    imageTitle->setText("");
 
    createMenu();
@@ -47,6 +49,10 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(centralWidget);
     show();
 
+    watcher = new QFileSystemWatcher(this);
+    connect(watcher, SIGNAL(fileChanged(const QString &)), this, SLOT(fileChanged(const QString &)));
+    connect(watcher, SIGNAL(directoryChanged(const QString &)), this, SLOT(directoryChanged(const QString &)));
+    //  watcher->addPath("path to directory");
     setImageTypes();
     imageNum = 0;
 
@@ -177,6 +183,17 @@ MainWindow::MainWindow(QWidget *parent) :
        fileManagement.reset();
        for (int i = 0; i < dir.size(); i++){
            setWindowTitle(dir[i]);
+
+           QDirIterator it0(dir[i], QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+
+           QStringList subdirs;
+           subdirs.append(dir[i]);
+           while (it0.hasNext()){
+               it0.next();
+               subdirs.append(it0.filePath());
+           }
+           watcher->addPaths(subdirs);
+
            QDirIterator it(dir[i], imageTypes, QDir::Files, QDirIterator::Subdirectories);
            while (it.hasNext()){
                QFileInfo InfoAboutCurrentFile (it.next());
@@ -263,6 +280,17 @@ MainWindow::MainWindow(QWidget *parent) :
             loadImage();
         }
     }
+
+    void MainWindow::directoryChanged(const QString & path) {
+
+      qDebug() << "path "<< path;
+    }
+
+    void MainWindow::fileChanged(const QString & path)
+    {
+      qDebug() << "path " << path;
+    }
+
 //*********************************
 void MainWindow::createToolBar(){
 

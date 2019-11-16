@@ -16,6 +16,8 @@
 #include <QtCore/QDateTime>
 #include <QDirIterator>
 #include <QDebug>
+#include <QFileSystemWatcher>
+
 
 #include "filemanagement.h"
 
@@ -97,6 +99,8 @@ private:
     void drawImage();
     void setTitle();
 
+//
+      QFileSystemWatcher * watcher;
 
 private slots:
     void exit();
@@ -111,6 +115,9 @@ private slots:
     void displayFit();
     void nextImage();
     void previousImage();
+
+    void directoryChanged(const QString & path);
+    void fileChanged(const QString & path);
 
 };
 
