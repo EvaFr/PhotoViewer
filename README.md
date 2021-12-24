@@ -65,4 +65,4 @@ Functions of the program:
    mainwindow.cpp: it contains Qt dependencies only. Slots, Widgets and image drawing.  
        
 
-
+//*********************************************
